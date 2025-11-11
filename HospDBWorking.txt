@@ -1,0 +1,271 @@
+Room (uniqueNumber, uniqueIdentifierCode) 
+Primary key uniqueNumber 
+Foreign key uniqueIdentifierCode references Surgeon (uniqueIdentifierCode) 
+EXPLANATION: 
+> Room is a strong entity 
+> It has two attributes uniqueNumber and uniqueIdentifierCode. 
+> uniqueNumber is a primary key and uniqueIdentifierCode is a foreign key 
+> UniqueIdentifierCode has been merged into the Room entity from the Surgeon entity.  
+> There was a 0:* relationship between Room and surgeon entity, meaning a room can 
+be used by 0 or more than one surgeon. 
+> From surgeon to Room entity there was a 1:2 relationship, meaning each eye surgeon 
+has one or two surgery rooms in which they work. 
+> It has a 0:* relationship with appointment entity, meaning it can have 0 or many 
+appointment in a room. 
+
+prefroom (preferredRoom, uniqueIdentifierCode) 
+Primary key UniqueIdentifierCode 
+Foreign key uniqueIdentifierCode references Surgeon(uniqueIdentifierCode) 
+EXPLANATION: 
+> prefroom is a weak entity. 
+> It is a weak entity formed by combining surgeon and Room entities. 
+> It has two attributes, preferredRoom and uniqueIdentifierCode 
+> Here uniqueIdentiferCode is a primary key 
+> uniqueIdentifierCode is a foreign key 
+> UniqueIdentifierCode has been merged into the prefroom entity from the Surgeon entity. 
+because, Each surgeon has a preferred room for them. 
+
+Surgeon (uniqueIdentifierCode, familyName, personalName, title, 
+contactPhoneNumber, qualifications) 
+Primary key uniqueIdentifierCode 
+EXPLANATION: 
+> Surgeon is a strong entity. 
+> It has a total of 6 attributes: uniqueIdentifierCode, familyName, personalName, title, 
+contactPhoneNumber, qualifications. 
+> uniqueIdentifierCode is the primary key. 
+> The simple attributes familyName and personalName listed which were part of the 
+composite attribute name.  
+> There was a 0:* relationship between Room and surgeon entity, meaning a room can 
+be used by 0 or more than one surgeon. 
+> From surgeon to Room entity there was a 1:2 relationship, meaning each eye surgeon 
+has one or two surgery rooms in which they work. 
+> Surgeon entity also has a 0:* relationship with service entity, meaning a surgeon gives 
+0 or many services and a service could be given by 0 or more than one Surgeon. 
+> Surgeon has a 0:* relationship with appointment entity,meaning a surgeon can have 0 
+to many appointments in a day but a surgeon can't have the same appointment again 
+thats why its a 1:1 relationship from the appointment table. 
+
+Client (clientNumber, familyName, personalName, title, Streetaddress, postcode) 
+Primary key clientNumber 
+EXPLANATION: 
+> client is a strong entity. 
+> client is also a parent entity for customer and patient 
+> It has a total of 6 attributes: clientNumber, familName, personalName, title, 
+Streetaddress, postcode 
+> The simple attributes familyName and personalName listed which were part of the 
+composite attribute name. 
+> It has mandatory/and relationship with its child entities(customer, patient), meaning 
+for every client, there must be at least one associated patient record and, at least one 
+associated customer record. 
+
+Customer (customerid, clientNumber, contactPhoneNumebers, emailAddress) 
+Primary key customerid 
+Foreign key clientNumber references Client(clientNumber) 
+EXPLANATION: 
+> customer is a child entity. 
+> It has 4 attributes: customerid , clientNumber NOT NULL, contactPhoneNumbers, 
+emailAddress 
+> customerid is a primary key 
+> clientNumber is a foreign key, By including the clientID as a foreign key in both Patient 
+and Customer, we ensure that every instance of Patient and Customer is associated 
+with a valid Client. This enforces the mandatory relationship, where every client must 
+have at least one associated Patient or Customer. 
+> The NOT NULL constraint ensures that the clientID cannot be null in either the Patient 
+or Customer table. This constraint guarantees no instances of a Patient or Customer 
+without an associated Client. 
+> It has a 1:* relationship between the patient entity because a customer can pay for 
+one or more patients 
+
+Patient (patientid, birthdate, customerid NOT NULL, medicareNumber) 
+Primary key patientid 
+Foreign key customerid references Customer(customerid) ON UPDATE CASCADE 
+EXPLANATION: 
+> Patient is a child entity. 
+> It has 4 attributes: patientid, birthdate, clientNumber, medicareNumber 
+> patientid is a primary key 
+> ClientNumber is a foreign key, By including the clientID as a foreign key in both Patient 
+and Customer, we ensure that every instance of Patient and Customer is associated 
+with a valid Client. This enforces the mandatory relationship, where every client must 
+have at least one associated Patient or Customer. 
+> The NOT NULL constraint ensures that the clientID cannot be null in either the Patient 
+or Customer table. This constraint guarantees no instances of a Patient or Customer 
+without an associated Client. 
+> It has a 1:1 relationship with the customer entity because only 1 customer can pay for 
+a patient  
+> For foreign key(clientNumber) we used ON UPDATE CASCADE because we need to 
+record which customer is currently responsible for paying for their treatment. So, by 
+using CASCADE it will increment the customerid. 
+> And customerid can't be NULL because there should be someone who has to pay the 
+bill for their own or family treatment. 
+Appointment has been merged to patient entity(child), it has a 1:1 relationship which 
+means a patient should make a appointment with a specific surgeon for only once in a 
+day but a patient can make appointments with different surgeons that's why it is 
+denoted as 0:* relationship. 
+
+Service (pescribedcode, description, currentserviceFee, uniqueIentifierCode) 
+Primary key pescribedcode 
+Foreign key uniqueIdentifierCode references Surgeon(uniqueIdentifierCode) 
+EXPLANATION: 
+> Service is a strong enitity 
+> It has 4 attributes: pescribedcode, description, currentserviceFee, 
+uniqueIentifierCode 
+> pescribedcode is the primary key 
+> uniqueIentifierCode is the foreign key, By including uniqueIdentifierCode as a foreign 
+key we couldl find which doctor gave that service. 
+> It has a 0:* relationship with appointment entity because a service may required for 0 
+or more than 1 patients and a single appointment can have 1 to 5 services that why it is 
+denoted as 1:5 relationship. 
+> And service entity also has a 0:* relationship with Surgeon entity because a service 
+may be provided by 0 or many surgeon and a surgeon gives 0 to many services that why 
+it is denoted by 0:* relationship 
+
+Fees (actualfee, UniqueIdentiferCode) 
+Primary key uniqueIdentifierCode  
+Foreign key uniqueIdentifierCode references Surgeon(uniqueIdentiferCode) 
+EXPLANATION: 
+> Fees is a weak entity formed by combining service and appointment entity. 
+> Primary key is uniqueIdentifierCode  
+> Foreign key is uniqueIdentifierCode 
+> It has two attributes : actualFee, uniqueIdentifierCode 
+uniqueIdentifierCode has been merged into fees entity, so that we could find which 
+surgeon changed the standard fee. 
+
+Appointment (DateAndStartingTime, patientid NOT NULL, uniqueIdentifierCode NOT 
+NULL, appointmentid, uniqueNumber NOT NULL, Clientid NOT NULL) 
+Primary key appointmentid 
+Foreign key patientid references Patient(patientid) 
+Foreign key uniqueIdentifierCode references Surgeon(uniqueIdentifierCode) 
+Foreign key uniqueNumber references Room(uniqueNumber) 
+
+CREATE TRIGGER generate_invoice 
+BEFORE INSERT ON Invoice 
+FOR EACH ROW 
+BEGIN 
+IF (SELECT clerkid FROM Appointment WHERE appointmentid = NEW.appointmentid) 
+IS NULL THEN 
+SELECT 'Cannot generate invoice. Clerkid is null.' ; 
+END IF; 
+END; 
+ALTER TABLE Appointment 
+ADD COLUMN uniquedate; 
+UPDATE Appointment  
+SET uniquedate = DATE(DateAndStartingTime); 
+CONSTRAINT uniqueappointment UNIQUE(uniquedate, uniqueNumber, 
+uniqueIdentifierCode); 
+EXPLANATION: 
+> Appointment entity is a strong entity. 
+> It has 5 attributes: DateAndStartingTime, patientid NOT NULL, uniqueIdentifierCode 
+NOT NULL, appointmentid, uniqueNumber NOT NULL 
+> Primary key is appointmentid 
+> There are 3 Foreign keys patientid, uniqueIdentifierCode, uniqueNumber 
+> By including patientid as foreign key we could find which patient booked appointment, 
+by including uniqueIdentifierCode we could find which surgeon going to give the 
+treatment, by including uniqueNumber we could find which surgeon room they are 
+going to use for the treatment. 
+> ClientID cant be null because if they are null means then invoice wont be generated as 
+we used trigger for it. 
+> The 3 foreign keys will be NOT NULL because a patient can't book an appointment 
+without patientid, a surgeon can't provide a treatment without his uniqueIdentifierCode 
+and they need a treatment room to give treatment. So, all the three foreign keys cant be 
+NULL. 
+> Appointment has been merged to patient entity(child), it has a 1:1 relationship which 
+means an appointment is scheduled for a patient with a specific surgeon for only once 
+in a day but a patient can make appointments with different surgeons that's why it is 
+denoted as 0:* relationship. 
+> Appointment entity has been merged into invoice entity, it has 0:1 relationship, 
+meaning an invoice has been 0 or 1 appointment and an invoice has been generated for 
+only one appointment that's why its denoted by 1..1 relationship. 
+> It has a 1:5 relationship with service, meaning a single appointment can have 1 to 5 
+services and service enitity has 0:* relationship with appointment entity because a 
+service may required for 0 or more than 1 patients 
+> Appointment entity has a 1:1 relationship with surgeon entity, meaning a surgeon can't 
+have the same appointment again and from the surgeon side it has a 0:* relationship, 
+meaning can have 0 to many appointments in a day. 
+> Appointment entity has 1:1 relationship with Room entity, meaning only a single room 
+can be allocated for the appointment. From the Room side, it has a 0:* relationship with 
+appointment entity, meaning it can have 0 or many appointments in a room. 
+> we created a trigger because we have to generate invoice at the end of the 
+appointment. 
+> So for that we used BEFORE INSERT ON invoice which means before inserting values 
+to th invoice do some things. 
+> for EACH ROW means its for each and every row and the body of the trigger comes 
+here BEGIN is to start 
+> IF (SELECT clerkid FROM Appointment WHERE appointmentid = NEW.appointmentid) 
+IS NULL THEN  
+SELECT 'Cannot generate invoice. Clerkid is null.' 
+> this line states that if clerkid from appointment table is null then print 'Cannot 
+generate invoice. Clerkid is null.' 
+> We used NEW.appointmentid meaning, it refers to the value of the APPOINTMENT 
+column in the newly inserted row. So the appointmentid has to be equal to the newly 
+inserted appointmentid. 
+
+HOW  WE EXTRACTED THE DATE FROM THE DateAndStartingTime(APMNT TABLE):
+> So we used ALTER TABLE APPOINTMENT which mean we need to alter appointment 
+table 
+> And then we used ADD COLUMN uniquedate which means we need to alter the 
+appointment table by adding a new column called uniquedate. 
+> And the we wrote UPDATE appointment which means, we created a column in the 
+appointment table before right, now we're going to update the appointment table. 
+> Next we used SET uniquedate = DATE(DateAndStartingTime) means, now we are going 
+to set values in the uniquedate column by extracting the values in the 
+DateAndStartingTime column. 
+> And we need to get only the date so we used DATE datatype  
+> At last, we used a constraint to get the unique values from the respective columns 
+(uniquenumber, uniquedate, uniqueIdentifierCode, patientid) because a patient can 
+book an appointment for only once in a day with a particular surgeon. So for that we 
+need these columns to be unique and we named the constraint as uniqueappointment. 
+
+Invoice (uniqueInvoiceNumber, relevantDate, clinicalComment, status, totalFee, 
+patientid, Description, uniqueIdentifierCode, customerid) 
+Primary key uniqueInvoiceNumber 
+Foreign key Patientid references Patient(patientid) 
+Foreign key uniqueIndentifierCode references Surgeon(uniqueIdentifierCode) 
+Foreign key description references Service(description) 
+Foreign key customerid references Customer(customerid) 
+SELECT  
+i.uniqueInvoiceNumber, 
+i.relevantDate, 
+i.patientid, 
+i.description, 
+i.uniqueIdentifierCode, 
+i.customerid, 
+SUM(s.currentServiceFee) AS currentFee, 
+SUM(f.actualFee) AS actualFee, 
+SUM(s.currentServiceFee) + SUM(f.actualFee) AS totalFee 
+FROM  
+Invoice i 
+JOIN  
+Service s ON i.uniqueIdentifierCode = s.uniqueIdentifierCode AND i.description = 
+s.description 
+JOIN  
+Fees f ON i.uniqueIdentifierCode = f.uniqueIdentifierCode AND i.description = 
+s.description 
+GROUP BY  
+i.uniqueInvoiceNumber, i.relevantDate, i.patientid, i.description, 
+i.uniqueIdentifierCode, i.customerid; 
+EXPLANATION: 
+> Invoice is a strong entity. 
+>  has 9 attributes: uniqueInvoiceNumber, relevantDate, clinicalComment, status, 
+totalFee, patientid, Description, uniqueIdentifierCode, customerid 
+> Primary key is uniqueInvoiceNumber 
+> It has 4 foreign keys: patient id, uniqueIndentifierCode, description, customerid. By 
+including patientid as foreign key we could find which patient got the treatment, by 
+including uniqueIdentifierCode we could find which surgeon gave the treatment, by 
+including customerid we could find whose the bill was for (own bill or family bill), by 
+including description we could find what services were provided during the 
+appointment. 
+> Invoice is linked to appointment entity and it has a 1:1 relationship, meaning an 
+invoice has been generated for only one appointment and from the appointment side it 
+has 0:1 relationship, meaning an invoice has been 0 or 1 appointment. 
+> SELECT STATEMENT: we included the attributes like uniqueInvoiceNumber, 
+relevantDate, patientid, description, uniqueIdentifierCode, customerid, 
+SUM(s.currentServiceFee) AS currentFee, SUM(f.actualFee) AS actualFee, 
+SUM(s.currentServiceFee) + SUM(f.actualFee) AS totalFee. 
+> Here we used three SUM because one is for service table another one for fees table 
+and last one is to sum both 
+> and then we joined description, uniqueIdentifierCode from service and fees tables, so 
+that we could sum the curretfee and actual fee because it will give the current 
+description and uniqueIdentifierCode  and it wont sum the past records. 
+> At last, we grouped them by uniqueInvoiceNumber, relevantDate, patientid, 
+description, uniqueIdentifierCode, customerid. This ensures that the aggregate function 
+(SUM) is applied to the appropriate groups.
