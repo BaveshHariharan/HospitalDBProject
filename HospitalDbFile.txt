@@ -100,9 +100,6 @@ SET uniquedate = DATE(DateAndStartingTime);
 CONSTRAINT uniqueappointment UNIQUE(uniquedate, uniqueNumber, uniqueIdentifierCode)
 );
 
-
-
-
 CREATE TABLE IF NOT EXISTS Invoice (
     uniqueInvoiceNumber INTEGER(5) PRIMARY KEY,
     relevantDate TIME,
@@ -119,7 +116,6 @@ CREATE TABLE IF NOT EXISTS Invoice (
     FOREIGN KEY (customerid) REFERENCES Customer(clientNumber)
     
 ); 
-
 
 SELECT 
     i.uniqueInvoiceNumber,
@@ -139,68 +135,3 @@ JOIN
     Fees f ON i.uniqueIdentifierCode = f.uniqueIdentifierCode AND i.description = s.description
 GROUP BY 
     i.uniqueInvoiceNumber, i.relevantDate, i.patientid, i.description, i.uniqueIdentifierCode, i.customerid;
-
------------------------------------------EXAMPLES----------------------------------------------------------------
-Surgeon Table:
-
-INSERT INTO Surgeon (uniqueIdentifierCode, familyName, personalName, title, contactPhoneNumber, qualifications) 
-VALUES 
-('AB', 'Smith', 'John', 'Dr.', '123-456-7890', 'MD'),
-('CD', 'Johnson', 'Alice', 'Dr.', '987-654-3210', 'MD');
-
-Client Table:
-
-INSERT INTO Client (clientNumber, familyName, personalName, title, streetAddress, postcode) 
-VALUES 
-(1, 'Doe', 'Jane', 'Ms.', '123 Main St', '1234'),
-(2, 'Brown', 'Bob', 'Mr.', '456 Elm St', '5678');
-
-Customer Table:
-
-INSERT INTO Customer (customerid, clientNumber, contactPhoneNumebers) 
-VALUES 
-(101, 1, '111-222-3333'),
-(102, 2, '444-555-6666');
-
- Patient Table:
-
-INSERT INTO Patient (patientid, birthdate, customerid, medicareNumber) 
-VALUES 
-(1001, '1990-01-01', 101, '123456789A'),
-(1002, '1985-05-15', 102, '987654321B');
-
-Service Table:
-
-INSERT INTO Service (prescribedCode, description, currentServiceFee, uniqueIdentifierCode) 
-VALUES 
-('001', 'Consultation', 50.00, 'AB'),
-('002', 'X-Ray', 100.00, 'AB'),
-('003', 'Blood Test', 75.00, 'CD');
-
-Fees Table:
-
-INSERT INTO Fees (actualFee, uniqueIdentifierCode) 
-VALUES 
-(200.00, 'AB'),
-(150.00, 'CD');
-
- Invoice Table:
-
-INSERT INTO Invoice (uniqueInvoiceNumber, relevantDate, clinicalComment, status, totalFee, patientid, description, uniqueIdentifierCode, customerid) 
-VALUES 
-(1001, '2024-05-13 14:30:00', 'Follow-up appointment', 'Paid', 50.00, 1001, 'Consultation', 'AB', 101),
-(1002, '2024-05-14 10:30:00', 'X-ray examination', 'Unpaid', 100.00, 1002, 'X-Ray', 'AB', 102);
-
-prefroom Table:
-
-INSERT INTO prefroom (preferredRoom, uniqueIdentifierCode) 
-VALUES 
-('101A', 'AB'),
-('102B', 'CD');
-
-Room Table:
-
-INSERT INTO Room (uniqueNumber, uniqueIdentifierCode) 
-VALUES 
-(101, 'AB'),
-(102, 'CD');
